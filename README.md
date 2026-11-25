@@ -4,6 +4,7 @@ Discover geotagged Wikipedia articles around a town, landmark or chosen coordina
 
 <!-- coolcode:guide -->
 Choose Halifax waterfront or search for another starting point, then increase the radius if few articles appear. Distances are straight-line measurements to article coordinates, not walking directions; save interesting places and check access before visiting.
+Use **Pictures of this place** on a result to open Commons Lens with that record’s coordinates prefilled. Commons Lens waits for you to submit before requesting media.
 <!-- /coolcode:guide -->
 
 ## Features

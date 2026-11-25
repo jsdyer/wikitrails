@@ -27,6 +27,7 @@ def main():
                 page.route('https://tile.openstreetmap.org/**',lambda r:r.abort())
                 page.goto(f'http://127.0.0.1:{server.server_port}/wikitrails/')
                 page.locator('.card').first.wait_for();assert page.locator('.card').count()==2
+                pictures=page.get_by_role('link',name='Pictures of this place').first.get_attribute('href');assert pictures=='https://coolcode.ca/commonslens/?lat=44.648&lon=-63.572'
                 page.locator('.card button',has_text='Save place').first.click();assert page.locator('#saved-list li').count()==1
                 page.reload();page.locator('.card').first.wait_for();assert page.locator('#saved-list li').count()==1
                 assert page.locator('#presets button').count()==3
