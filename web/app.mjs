@@ -1,37 +1,23 @@
-import { cleanLines } from './model.mjs';
-const input = document.querySelector('#input');
-const output = document.querySelector('#output');
-const status = document.querySelector('#status');
-const copy = document.querySelector('#copy');
-function update() {
-  const result = cleanLines(input.value);
-  output.value = result.text;
-  status.textContent = `${result.count} unique ${result.count === 1 ? 'line' : 'lines'}; ${result.removed} ${result.removed === 1 ? 'duplicate' : 'duplicates'} removed.`;
-  copy.disabled = result.count === 0;
-}
-input.addEventListener('input', update);
-document.querySelector('#sample').addEventListener('click', () => {
-  input.value = '  Halifax\nLangley\nHalifax\n\nVancouver  ';
-  update();
-});
-document.querySelector('#clear').addEventListener('click', () => {
-  input.value = '';
-  update();
-  input.focus();
-});
-if (navigator.clipboard && window.isSecureContext) {
-  copy.hidden = false;
-  copy.disabled = true;
-  copy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(output.value);
-      status.textContent = 'Result copied.';
-    } catch {
-      output.focus();
-      output.select();
-      status.textContent = 'Copy was unavailable. The result is selected so you can copy it manually.';
-    }
-  });
-}
-// Namespace future preference storage as coolcode:<tool-id>:<key>.
-// Do not persist pasted text or uploads by default.
+import {coordinates,distanceText,validateConfig,normalizePages,nearbyUrl,searchUrl,readSaved} from './model.mjs';
+const $=s=>document.querySelector(s),key='coolcode:wikitrails:saved';
+const state={config:null,center:null,results:[],saved:[],request:0,map:null,markers:new Map()};
+try{state.saved=readSaved(localStorage.getItem(key));}catch{}
+function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
+function status(text,error=false){$('#status').textContent=text;$('#status').classList.toggle('error',error);}
+async function request(url){const response=await fetch(url,{signal:AbortSignal.timeout(25000),referrerPolicy:'no-referrer'});if(!response.ok)throw new Error(`Wikipedia returned ${response.status}. Try again shortly.`);const data=await response.json();if(data.error)throw new Error(data.error.info||'Wikipedia could not complete this request.');return data;}
+function persist(){try{localStorage.setItem(key,JSON.stringify(state.saved));}catch{status('The list is available in this tab, but browser storage is unavailable. Export it before closing.',true);}renderSaved();renderResults();}
+function save(item){if(state.saved.some(p=>p.id===item.id))return;if(state.saved.length>=200){status('Your list contains 200 places. Export or remove some before adding more.',true);return;}state.saved.push({...item});persist();}
+function renderSaved(){const list=$('#saved-list');list.replaceChildren();$('#saved-count').textContent=state.saved.length;$('#clear').disabled=!state.saved.length;$('#export').disabled=!state.saved.length;for(const [i,p] of state.saved.entries()){const li=el('li');const a=el('a',p.title);a.href=p.url;a.target='_blank';a.rel='noopener';li.append(a);const actions=el('div',undefined,'saved-actions');for(const [text,fn,disabled] of [['Earlier',()=>{[state.saved[i-1],state.saved[i]]=[state.saved[i],state.saved[i-1]];persist();},i===0],['Later',()=>{[state.saved[i+1],state.saved[i]]=[state.saved[i],state.saved[i+1]];persist();},false||i===state.saved.length-1],['Remove',()=>{state.saved.splice(i,1);persist();},false]]){const b=el('button',text,'quiet');b.disabled=disabled;b.setAttribute('aria-label',`${text}: ${p.title}`);b.onclick=fn;actions.append(b);}li.append(actions);list.append(li);}if(!state.saved.length)list.append(el('p','Save places from the results to build your own walk.','muted'));}
+function select(p){state.map?.setView([p.lat,p.lon],16);state.markers.get(p.id)?.openPopup();document.querySelectorAll('.card').forEach(c=>c.classList.toggle('selected',c.dataset.id===String(p.id)));}
+function renderResults(){const q=$('#filter').value.trim().toLowerCase(),rows=state.results.filter(p=>(p.title+' '+p.extract).toLowerCase().includes(q));$('#count').textContent=`${rows.length} places`;const results=$('#results');results.replaceChildren();for(const p of rows){const card=el('article',undefined,'card');card.dataset.id=p.id;if(p.image){const img=el('img');img.src=p.image;img.alt='';img.className='card-image';img.loading='lazy';img.referrerPolicy='no-referrer';card.append(img);}card.append(el('h3',p.title),el('div',`${distanceText(p.distance)} from your starting point`,'meta'),el('p',p.extract));const actions=el('div',undefined,'actions'),show=el('button','Show on map','secondary'),saved=state.saved.some(x=>x.id===p.id),add=el('button',saved?'Saved':'Save place');show.onclick=()=>select(p);add.disabled=saved;add.onclick=()=>save(p);const a=el('a','Read article');a.href=p.url;a.target='_blank';a.rel='noopener';actions.append(show,add,a);if(p.revision){const revision=el('a','Source revision');revision.href=p.url+`&oldid=${p.revision}`;revision.target='_blank';revision.rel='noopener';actions.append(revision);}card.append(actions);results.append(card);}if(!rows.length)results.append(el('p',state.results.length?'No places match that filter.':'No geotagged articles found in this area. Try a larger radius or another starting point.','empty'));renderMarkers(rows);}
+function initMap(){if(!globalThis.L){status('The map library could not load. Article lists remain available.',true);return;}state.map=L.map('map',{scrollWheelZoom:false}).setView([44.6476,-63.5727],14);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(state.map);}
+function renderMarkers(rows){if(!state.map)return;for(const marker of state.markers.values())marker.remove();state.markers.clear();for(const p of rows){const label=el('div',p.title);const marker=L.circleMarker([p.lat,p.lon],{radius:7,color:'#056967',weight:2,fillColor:'#ffffff',fillOpacity:.9}).addTo(state.map).bindPopup(label);marker.on('click',()=>select(p));state.markers.set(p.id,marker);}if(state.center){if(state.centerMarker)state.centerMarker.remove();state.centerMarker=L.circleMarker([state.center.lat,state.center.lon],{radius:7,color:'#b54c25',fillColor:'#b54c25',fillOpacity:1}).addTo(state.map).bindPopup('Your starting point');}}
+async function explore(center,label){const id=++state.request;state.center=coordinates(center.lat,center.lon);state.label=label||'Selected coordinates';$('#lat').value=state.center.lat;$('#lon').value=state.center.lon;$('#results-heading').textContent=`Around ${state.label}`;status(`Finding nearby articles around ${state.label}…`);$('#refresh').disabled=true;try{const data=await request(nearbyUrl(state.center,Number($('#radius').value),state.config.result_limit,state.config.language));if(id!==state.request)return;state.results=normalizePages(data,state.center,state.config.language);renderResults();state.map?.setView([state.center.lat,state.center.lon],Number($('#radius').value)>3000?12:14);status(`${state.results.length} geotagged articles found · Retrieved ${new Date().toLocaleString()} · Up to ${state.config.result_limit} nearby results.`);}catch(e){if(id!==state.request)return;state.results=[];renderResults();status(`Could not load articles. ${e.message} Your saved list is still available.`,true);}finally{if(id===state.request)$('#refresh').disabled=false;}}
+$('#place-form').addEventListener('submit',async e=>{e.preventDefault();const q=$('#place').value.trim();if(!q)return;status('Finding matching places…');const holder=$('#place-options');holder.replaceChildren();try{const payload=await request(searchUrl(q,state.config.language));const places=normalizePages(payload,{lat:0,lon:0},state.config.language);if(!places.length){status('No matching article with coordinates. Try a nearby landmark or enter coordinates.',true);return;}status('Choose a starting point from the matches below.');for(const p of places){const b=el('button',p.title);b.onclick=()=>{holder.replaceChildren();explore(p,p.title);};holder.append(b);}}catch(e){status(e.message,true);}});
+$('#coordinates-form').addEventListener('submit',e=>{e.preventDefault();try{explore(coordinates($('#lat').value,$('#lon').value),'selected coordinates');}catch(e){status(e.message,true);}});
+$('#radius').onchange=()=>state.center&&explore(state.center,state.label);$('#refresh').onclick=()=>state.center&&explore(state.center,state.label);$('#filter').oninput=renderResults;
+$('#locate').onclick=()=>{if(!navigator.geolocation){status('Location access is unavailable. Search for a place or enter coordinates.',true);return;}status('Waiting for location permission…');navigator.geolocation.getCurrentPosition(p=>explore({lat:p.coords.latitude,lon:p.coords.longitude},'your location'),()=>status('Location could not be obtained. Search for a place or enter coordinates instead.',true),{enableHighAccuracy:false,timeout:15000,maximumAge:60000});};
+$('#clear').onclick=()=>{if(confirm('Clear your saved walking list from this browser?')){state.saved=[];persist();}};
+$('#export').onclick=()=>{const blob=new Blob([JSON.stringify({application:'Wiki Trails',exported_at:new Date().toISOString(),places:state.saved},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='wikitrails-walking-list.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+async function init(){renderSaved();try{state.config=validateConfig(await(await fetch('./config.json')).json());const radius=String(state.config.default_radius_m);if(!Array.from($('#radius').options).some(o=>o.value===radius))$('#radius').add(new Option(`${radius} m`,radius));$('#radius').value=radius;for(const p of state.config.presets){const b=el('button',p.name);b.onclick=()=>explore(p,p.name);$('#presets').append(b);}initMap();await explore(state.config.presets[0],state.config.presets[0].name);}catch(e){status(`Could not initialize this page: ${e.message}`,true);}}
+init();

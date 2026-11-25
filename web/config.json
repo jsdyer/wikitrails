@@ -1,0 +1,10 @@
+{
+  "language": "en",
+  "default_radius_m": 1500,
+  "result_limit": 40,
+  "presets": [
+    {"name":"Halifax waterfront","lat":44.6476,"lon":-63.5727},
+    {"name":"Downtown Vancouver","lat":49.2827,"lon":-123.1207},
+    {"name":"Fort Langley","lat":49.1686,"lon":-122.5790}
+  ]
+}

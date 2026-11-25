@@ -1,16 +1,23 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "wikitrails",
+  "title": "Wiki Trails",
+  "description": "Discover nearby history, buildings and landmarks from Wikipedia, then save a personal walking list.",
+  "category": "places",
+  "tags": [
+    "Wikipedia",
+    "walking",
+    "places",
+    "Halifax",
+    "Vancouver",
+    "local history"
+  ],
+  "icon": "map",
+  "url": "/wikitrails/",
+  "source": "https://github.com/jsdyer/wikitrails",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "live",
+    "detail": "Wikipedia geotagged articles and excerpts near a chosen place, with OpenStreetMap tiles."
   }
 }

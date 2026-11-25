@@ -1,21 +1,8 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { cleanLines } from '../web/model.mjs';
-test('trims, removes blanks and preserves first-seen order', () => {
-  assert.deepEqual(cleanLines('  Halifax\nLangley\nHalifax\n\nVancouver  '), {
-    text: 'Halifax\nLangley\nVancouver', count: 3, removed: 1,
-  });
-});
-test('supports Windows and old Mac line endings', () => {
-  assert.equal(cleanLines('a\r\nb\ra').text, 'a\nb');
-});
-test('empty text and whitespace produce an empty result', () => {
-  assert.deepEqual(cleanLines(' \n\t'), { text: '', count: 0, removed: 0 });
-});
-test('preserves case and Unicode', () => {
-  assert.equal(cleanLines('Québec\nquébec\n東京\nQuébec').text, 'Québec\nquébec\n東京');
-});
-test('treats markup as ordinary text', () => {
-  assert.equal(cleanLines('<script>alert(1)</script>\n<script>alert(1)</script>').text, '<script>alert(1)</script>');
-});
-test('rejects non-text input', () => { assert.throws(() => cleanLines(null), TypeError); });
+import test from 'node:test';import assert from 'node:assert/strict';
+import {coordinates,distance,validateConfig,normalizePages,nearbyUrl,searchUrl,readSaved} from '../web/model.mjs';
+test('coordinate validation accepts zero and rejects blanks/range/nonfinite',()=>{assert.deepEqual(coordinates(0,0),{lat:0,lon:0});for(const p of [['',0],[91,1],[0,-181],[NaN,0]])assert.throws(()=>coordinates(...p));});
+test('distance handles identical, antimeridian and antipodal points',()=>{assert.equal(distance({lat:0,lon:0},{lat:0,lon:0}),0);assert.ok(distance({lat:0,lon:179.9},{lat:0,lon:-179.9})<23000);assert.ok(Number.isFinite(distance({lat:90,lon:0},{lat:-90,lon:180})));});
+test('normalizes only geotagged pages and drops unsafe images',()=>{const rows=normalizePages({query:{pages:{1:{pageid:1,title:'<img>',coordinates:[{lat:44,lon:-63}],extract:'Text',thumbnail:{source:'javascript:bad()'},lastrevid:88},2:{pageid:2,title:'No location'}}}},{lat:44,lon:-63});assert.equal(rows.length,1);assert.equal(rows[0].title,'<img>');assert.equal(rows[0].image,null);assert.equal(rows[0].distance,0);assert.equal(rows[0].revision,88);});
+test('queries encode user input and enforce provider radius',()=>{const u=new URL(searchUrl('A&B #x'));assert.equal(u.searchParams.get('gsrsearch'),'A&B #x');assert.throws(()=>nearbyUrl({lat:0,lon:0},11000,40));const n=new URL(nearbyUrl({lat:0,lon:0},1000,90));assert.equal(n.searchParams.get('ggslimit'),'50');});
+test('configuration accepts additional places, arbitrary coordinates and lower limit',()=>{const c=validateConfig({language:'en',presets:[{name:'A',lat:0,lon:0},{name:'B',lat:1,lon:1},{name:'C',lat:2,lon:2},{name:'D',lat:3,lon:3}],result_limit:7});assert.equal(c.presets.length,4);assert.equal(c.result_limit,7);});
+test('saved data tolerates corruption and blocks unsafe source links',()=>{assert.deepEqual(readSaved('bad'),[]);assert.deepEqual(readSaved(JSON.stringify([{id:1,title:'X',lat:0,lon:0,url:'javascript:alert(1)'}])),[]);assert.equal(readSaved(JSON.stringify([{id:1,title:'X',lat:0,lon:0,url:'https://en.wikipedia.org/?curid=1'}])).length,1);});
