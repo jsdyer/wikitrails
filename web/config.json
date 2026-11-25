@@ -3,8 +3,208 @@
   "default_radius_m": 1500,
   "result_limit": 40,
   "presets": [
-    {"name":"Halifax waterfront","lat":44.6476,"lon":-63.5727},
-    {"name":"Downtown Vancouver","lat":49.2827,"lon":-123.1207},
-    {"name":"Fort Langley","lat":49.1686,"lon":-122.5790}
+    {
+      "name": "Halifax waterfront",
+      "lat": 44.6476,
+      "lon": -63.5727,
+      "group": "Nova Scotia",
+      "quick": true
+    },
+    {
+      "name": "Downtown Vancouver",
+      "lat": 49.2827,
+      "lon": -123.1207,
+      "group": "British Columbia",
+      "quick": true
+    },
+    {
+      "name": "Fort Langley",
+      "lat": 49.1686,
+      "lon": -122.579,
+      "group": "British Columbia",
+      "quick": true
+    },
+    {
+      "name": "Victoria",
+      "lat": 48.42833333,
+      "lon": -123.36472222,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Nanaimo",
+      "lat": 49.16416667,
+      "lon": -123.93638889,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Whistler",
+      "lat": 50.11666667,
+      "lon": -122.95416667,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Kelowna",
+      "lat": 49.88805556,
+      "lon": -119.49555556,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Surrey",
+      "lat": 49.19,
+      "lon": -122.84888889,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Burnaby",
+      "lat": 49.26666667,
+      "lon": -122.96666667,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "New Westminster",
+      "lat": 49.20694444,
+      "lon": -122.91111111,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "North Vancouver",
+      "lat": 49.31666667,
+      "lon": -123.06666667,
+      "group": "British Columbia",
+      "quick": false
+    },
+    {
+      "name": "Dartmouth",
+      "lat": 44.66666667,
+      "lon": -63.56666667,
+      "group": "Nova Scotia",
+      "quick": false
+    },
+    {
+      "name": "Lunenburg",
+      "lat": 44.3778,
+      "lon": -64.3094,
+      "group": "Nova Scotia",
+      "quick": false
+    },
+    {
+      "name": "Truro",
+      "lat": 45.36472222,
+      "lon": -63.28,
+      "group": "Nova Scotia",
+      "quick": false
+    },
+    {
+      "name": "Sydney",
+      "lat": 46.13638889,
+      "lon": -60.19555556,
+      "group": "Nova Scotia",
+      "quick": false
+    },
+    {
+      "name": "Charlottetown",
+      "lat": 46.23527778,
+      "lon": -63.12666667,
+      "group": "Other Atlantic Canada",
+      "quick": false
+    },
+    {
+      "name": "Saint John",
+      "lat": 45.28055556,
+      "lon": -66.07611111,
+      "group": "Other Atlantic Canada",
+      "quick": false
+    },
+    {
+      "name": "Fredericton",
+      "lat": 45.94527778,
+      "lon": -66.66666667,
+      "group": "Other Atlantic Canada",
+      "quick": false
+    },
+    {
+      "name": "St. John’s",
+      "lat": 47.5614,
+      "lon": -52.7119,
+      "group": "Other Atlantic Canada",
+      "quick": false
+    },
+    {
+      "name": "Toronto",
+      "lat": 43.6525,
+      "lon": -79.38166667,
+      "group": "Ontario & Quebec",
+      "quick": false
+    },
+    {
+      "name": "Montréal",
+      "lat": 45.50888889,
+      "lon": -73.55416667,
+      "group": "Ontario & Quebec",
+      "quick": false
+    },
+    {
+      "name": "Québec City",
+      "lat": 46.81388889,
+      "lon": -71.20805556,
+      "group": "Ontario & Quebec",
+      "quick": false
+    },
+    {
+      "name": "Ottawa",
+      "lat": 45.42472222,
+      "lon": -75.695,
+      "group": "Ontario & Quebec",
+      "quick": false
+    },
+    {
+      "name": "Winnipeg",
+      "lat": 49.89555556,
+      "lon": -97.13861111,
+      "group": "Prairies",
+      "quick": false
+    },
+    {
+      "name": "Calgary",
+      "lat": 51.0475,
+      "lon": -114.0625,
+      "group": "Prairies",
+      "quick": false
+    },
+    {
+      "name": "Edmonton",
+      "lat": 53.53444444,
+      "lon": -113.49027778,
+      "group": "Prairies",
+      "quick": false
+    },
+    {
+      "name": "Whitehorse",
+      "lat": 60.72416667,
+      "lon": -135.05611111,
+      "group": "Northern Canada",
+      "quick": false
+    },
+    {
+      "name": "Yellowknife",
+      "lat": 62.45361111,
+      "lon": -114.37,
+      "group": "Northern Canada",
+      "quick": false
+    },
+    {
+      "name": "Iqaluit",
+      "lat": 63.74944444,
+      "lon": -68.52166667,
+      "group": "Northern Canada",
+      "quick": false
+    }
   ]
 }

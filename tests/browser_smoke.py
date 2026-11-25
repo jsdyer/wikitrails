@@ -23,6 +23,9 @@ def main():
                 page.locator('.card').first.wait_for();assert page.locator('.card').count()==2
                 page.locator('.card button',has_text='Save place').first.click();assert page.locator('#saved-list li').count()==1
                 page.reload();page.locator('.card').first.wait_for();assert page.locator('#saved-list li').count()==1
+                assert page.locator('#presets button').count()==3
+                assert page.locator('#preset optgroup').count()>=6
+                page.locator('#preset').select_option(label='Victoria');assert 'Victoria' in page.locator('#results-heading').inner_text()
                 page.locator('#filter').fill('railway');assert page.locator('.card').count()==1
                 page.locator('#place').fill('Dartmouth');page.get_by_role('button',name='Find place',exact=True).click();page.locator('#place-options button').first.wait_for();page.locator('#place-options button').first.click()
                 page.locator('#filter').fill('');page.screenshot(path=str(screenshots/'desktop.png'),full_page=True)

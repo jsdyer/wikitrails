@@ -9,6 +9,7 @@ Choose Halifax waterfront or search for another starting point, then increase th
 ## Features
 
 - Search any town, neighbourhood or landmark with a geotagged Wikipedia article; coordinate entry works anywhere.
+- Grouped starting places across British Columbia, Nova Scotia, Atlantic Canada, Ontario/Quebec, the Prairies and the North; the three quick-start buttons remain compact.
 - Optional geolocation, adjustable 500 m–10 km search radius, local text filter and interactive map.
 - Wikipedia extracts, available article thumbnails, article links and exact source revision links.
 - Private saved places, reordering, removal and JSON export. Up to 200 saved places.
@@ -26,7 +27,7 @@ Place searches and chosen coordinates go to Wikipedia. The browser contacts Open
 
 ## Expand or customize
 
-Edit `web/config.json`. Add any preset using `{ "name": "Dartmouth waterfront", "lat": 44.6654, "lon": -63.5684 }`. Presets are conveniences, not an allowlist. Visitors can always search or enter other valid coordinates. Change `language` to a supported two- or three-letter Wikipedia language code, `default_radius_m` between 100 and 10000, or `result_limit` between 1 and 50.
+Edit `web/config.json`. Add any preset using `{ "name": "Dartmouth waterfront", "lat": 44.6654, "lon": -63.5684, "group": "Nova Scotia", "quick": false }`. The selector groups every configured place; set `quick: true` only for a few frequently used starting points. Presets are conveniences, not an allowlist. Visitors can always search or enter other valid coordinates. Change `language` to a supported two- or three-letter Wikipedia language code, `default_radius_m` between 100 and 10000, or `result_limit` between 1 and 50.
 
 Push the configuration change to `main`; the normal Pages workflow builds and publishes it. No data-refresh workflow, schedule guard, collector heartbeat or API secret is required. Existing saved lists remain usable after presets change. Users can switch language by changing config in their own deployment.
 
